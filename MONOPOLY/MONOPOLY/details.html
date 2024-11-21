@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details-table th, .details-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .details-table th {
+            background-color: #4a90e2;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .details-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .details-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .correct {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .close-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            font-size: 1.5em;
+            color: #4a90e2;
+        }
+
+        .close-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:void(0);" class="close-link" onclick="window.close();">← Retour</a>
+    <h1>Résultat</h1>
+    <div class="container">
+        <div id="details-container"></div>
+    </div>
+
+
+    <script>
+        // Récupérer le matricule et userResponses depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const matricule = urlParams.get('matricule');
+        const userResponses = JSON.parse(decodeURIComponent(urlParams.get('userResponses')));
+
+        const detailsContainer = document.getElementById('details-container');
+
+        // Afficher le matricule
+        detailsContainer.innerHTML = `<h2>Matricule: ${matricule}</h2>`;
+
+        // Créer un tableau pour afficher les réponses
+        const table = document.createElement("table");
+        table.className = "details-table"; 
+
+        const headerRow = table.insertRow(0);
+        const headers = ["Question", "Réponse"];
+        headers.forEach((header, i) => {
+            const headerCell = headerRow.insertCell(i);
+            headerCell.textContent = header;
+        });
+
+        // Boucle à travers les réponses de l'utilisateur
+        userResponses.forEach(response => {
+            const row = table.insertRow();
+            row.insertCell(0).textContent = response.question; // Affiche la question
+
+            const answerCell = row.insertCell(1);
+            if (response.correct) {
+                answerCell.innerHTML = `<span class="correct">✔️</span>`; // Flèche verte pour correct
+            } else {
+                answerCell.innerHTML = `<span class="incorrect">❌</span>`; // Croix rouge pour incorrect
+            }
+        });
+
+        detailsContainer.appendChild(table);
+    </script>
+    
+    <div class="footer">
+        &copy;  ILIASS ELMNIAI
+    </div>
+</body>
+</html>

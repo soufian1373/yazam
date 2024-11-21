@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAZA POLY</title>
+    <link rel="icon" type="image/x-icon" href="TITLE QR/TEST.png">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Change to 100vh to center vertically */
+            margin: 0;
+            color: #ecf0f1;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #quiz-container {
+            height: 670px;
+
+            background-color: #34495e;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+
+            width: 600px;
+            max-width: 800px;
+            text-align: center;
+        }
+
+
+        #photo-grid {
+            display: none;
+            /* Hide initially */
+
+            grid-template-columns: repeat(7, 100px);
+            /* Set the columns to fixed width */
+            gap: 4px;
+            /* Add gap between the cells */
+            justify-content: center;
+            /* Center the grid in the container */
+            background-color: #F0FFF0;
+
+        }
+
+        .photo-cell {
+            position: relative;
+            width: 100px;
+            /* Set fixed width */
+            height: 100px;
+            /* Set fixed height */
+        }
+
+        .photo-cell img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .red-dot {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 30px solid red
+        }
+
+
+
+        #photo-grid .center-logo {
+            width: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #ecf0f1;
+        }
+
+        #question-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #question-number {
+            font-size: 24px;
+        }
+
+        #question {
+            font-size: 24px;
+        }
+
+        .answer-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 18px;
+            background-color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .answer-button:hover {
+            background-color: #16a085;
+            transform: scale(1.05);
+        }
+
+        .answer-button.correct {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .answer-button.incorrect {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #2ecc71;
+            color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #score {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 5px;
+        }
+
+        #score span {
+            font-weight: bold;
+        }
+
+        #duration {
+            font-size: 18px;
+            margin-top: 10px;
+            background-color: #778899;
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            width: 100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #start-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: justify-content 0.5s;
+        }
+
+        #matricule-input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #start-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #start-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        header {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+        }
+
+        #logo {
+            width: 150px;
+            height: 50px;
+            margin-right: 20px;
+        }
+
+        #question-number {
+            color: #778899;
+        }
+
+        #restart-button {
+            background-color: #DC143C;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            font-size: 16px;
+            margin: 60px auto;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #restart-button:hover {
+            background-color: #45a049;
+            /* Vert plus foncé au survol */
+        }
+
+        /* Add some basic styling to the table */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        #next-button {
+            display: none;
+            /* Masqué par défaut */
+            padding: 10px 20px;
+            margin: 20px auto;
+            /* Ajoute de la marge et centre le bouton */
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #next-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #next-button:active {
+            background-color: #397d3f;
+            transform: scale(1.02);
+        }
+
+        #next-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(72, 180, 97, 0.5);
+        }
+
+        /* Assurez-vous que le conteneur parent a un text-align: center; */
+        #question-container {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="quiz-container">
+            <header>
+                <img src='TITLE QR/R.png' alt="Logo" id="logo">
+            </header>
+            <h1>Quiz</h1>
+            <div id="start-container">
+                <input id="matricule-input" type="number" placeholder="Entrez votre matricule" min="0"
+                    oninput="validateNumberInput(this)">
+                <button id="start-button" onclick="startQuiz()">Commencer</button>
+            </div>
+            <div id="duration" style="display: none;">00:00</div>
+            <div id="question-container" style="display: none;">
+                <div id="question" style="float: right;"></div>
+                <div id="question-number" style="float: left;"></div>
+            </div>
+            <button class="answer-button" onclick="checkAnswer(0)" style="display: none;">Réponse 1</button>
+            <button class="answer-button" onclick="checkAnswer(1)" style="display: none;">Réponse 2</button>
+            <button class="answer-button" onclick="checkAnswer(2)" style="display: none;">Réponse 3</button>
+
+            <div id="result">.مرحبا بك في تحدي يازاكي،المرجو إدخال الرقم الخاص بك ليبدأ التحدي</div>
+            <div id="score" style="display: none;">
+                Score : <span id="correct-answers">0</span> / <span id="total-questions">0</span>
+            </div>
+            <button id="next-button" onclick="nextQuestion()" style="display: none;">Next</button>
+
+            <button id="restart-button" style="display: none;" onclick="restartQuiz()">Rejouer</button>
+            <div id="scoreboard"></div>
+
+
+
+
+        </div>
+        <div id="photo-grid">
+            <div class="photo-cell" style="grid-area: 1 / 1 / 2 / 2; border: 2px solid black;"><img src="TITLE QR/1.png"
+                    alt="Photo 1">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 2 / 2 / 3; border: 2px solid black;"><img src="TITLE QR/2.png"
+                    alt="Photo 2">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 3 / 2 / 4; border: 2px solid black;"><img src="TITLE QR/3.png"
+                    alt="Photo 3">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 4 / 2 / 5; border: 2px solid black;"><img src="TITLE QR/4.png"
+                    alt="Photo 4">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 5 / 2 / 6; border: 2px solid black;"><img src="TITLE QR/5.png"
+                    alt="Photo 5">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 6 / 2 / 7; border: 2px solid black;"><img src="TITLE QR/6.png"
+                    alt="Photo 6">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 1 / 7 / 2 / 8; ;"><img src="TITLE QR/start.png" alt="">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 2 / 1 / 3 / 2; border: 2px solid black;"><img src="TITLE QR/7.png"
+                    alt="Photo 7">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 2 / 7 / 3 / 8; border: 2px solid black;"><img src="TITLE QR/8.png"
+                    alt="Photo 8">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 3 / 1 / 4 / 2; border: 2px solid black;"><img
+                    src="TITLE QR/10.png" alt="Photo 9">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 3 / 7 / 4 / 8; border: 2px solid black;"><img src="TITLE QR/9.png"
+                    alt="Photo 10">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 4 / 1 / 5 / 2; border: 2px solid black;"><img
+                    src="TITLE QR/11.png" alt="Photo 11">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 4 / 7 / 5 / 8; border: 2px solid black;"><img
+                    src="TITLE QR/12.png" alt="Photo 12">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 5 / 1 / 6 / 2; border: 2px solid black;"><img
+                    src="TITLE QR/13.png" alt="Photo 13">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 5 / 7 / 6 / 8; border: 2px solid black;"><img
+                    src="TITLE QR/14.png" alt="Photo 14">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 4 / 3 / 5 / 4;">
+                <img src="TITLE QR/R.PNG" alt="Logo" class="center-logo" style="width: 300px; height: auto;">
+            </div>
+            <div class="photo-cell" style="grid-area: 6 / 1 / 7 / 2; border: 2px solid black;"><img
+                    src="TITLE QR/15.png" alt="Photo 15">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 6 / 7 / 7 / 8; border: 2px solid black;"><img
+                    src="TITLE QR/16.png" alt="Photo 16">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 1 / 8 / 2; border: 2px solid black;"><img
+                    src="TITLE QR/17.png" alt="Photo 17">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 2 / 8 / 3; border: 2px solid black;"><img
+                    src="TITLE QR/18.png" alt="Photo 18">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 3 / 8 / 4; border: 2px solid black;"><img
+                    src="TITLE QR/19.png" alt="Photo 19">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 4 / 8 / 5; border: 2px solid black;"><img
+                    src="TITLE QR/20.png" alt="Photo 20">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 5 / 8 / 6; border: 2px solid black;"><img
+                    src="TITLE QR/21.png" alt="Photo 21">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 6 / 8 / 7; border: 2px solid black;"><img
+                    src="TITLE QR/22.png" alt="Photo 22">
+                <div class="red-dot"></div>
+            </div>
+            <div class="photo-cell" style="grid-area: 7 / 7 / 8 / 8; border: 2px solid black;"><img
+                    src="TITLE QR/23.png" alt="Photo 23">
+                <div class="red-dot"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "متى تأسست الشركة ؟ و من هو مؤسسها ؟",
+                answers: ["1929 صادامي يازاكي", "1999 ريكو يازاكي", " 1992 يوسيهيكو يازاكي"], correctAnswer: 0, photoIndex: 0
+            },
+            {
+                question: "ما هي الخدمات التي توفرها لك الشركة ؟",
+                answers: ["المطعم ,الخدمات الطبية,النقل", "السفر,النقل,السكن", "السكن,الخدمات الطبية,المطعم"], correctAnswer: 0, photoIndex: 1
+            },
+            {
+                question: "ماذا يمثل الكابل بالنسبة للسيارة ؟",
+                answers: ["النظام الحركي", "الجهاز العصبي", "الجهاز الهضمي"], correctAnswer: 1, photoIndex: 2
+            },
+            {
+                question: "5S",
+                answers: ["الفرز، التنظيم، التنظيف، توحيد المعايير، الإنظباط", "الفرز، التنظيم، التنظيف، توحيد المعايير", "الفرز، التنظيم، التصنيف، توحيد المعايير، الإنظباط"], correctAnswer: 0, photoIndex: 3
+            },
+            /*{
+                question: "أين أنت ؟",
+                correctAnswer: "البيت",
+                photoIndex: 4
+            },*/
+            {
+                question: "ما هي ركائز روح يازاكي ؟",
+                answers: ["الشجاعة، مبدأ خدمة الآخر", "المثابرة، بعد النظر، مبدأ خدمة الآخر", "الأمل، الشجاعة، المثابرة"], correctAnswer: 1, photoIndex: 5
+            },
+            {
+                question: "ماذا يمثل الرمز ؟ أعط بعض الأمثلة.",
+                answers: ["Process normal  : clip checker-mur qualite", "Process special : Teste Electrique-visseuse", "Process special : clip checker-mur qualite"], correctAnswer: 1, photoIndex: 7
+            },
+            {
+                question: "في حالة وجود مشكلة من أي نوع، بمن تتصل؟",
+                answers: ["رئيس خط الإنتاج و المكون.", "المكون و المسؤول عن الصيانة.", "رئيس خط الإنتاج و المسؤول عن الجودة"], correctAnswer: 2, photoIndex: 8
+            },
+            {
+                question: "ماذا تعني هذه البطاقة ؟",
+                answers: ["البطاقة العملية", "البطاقة الحمراء", "البطاقة المؤقتة."], correctAnswer: 2, photoIndex: 10
+            },
+            {
+                question: "ماذا يعني وما هو دوره ؟",
+                answers: ["نظام التبليغ", "نظام التصعيد", "النظام الحركي"], correctAnswer: 0, photoIndex: 9
+            },
+            /*{
+                question: "اووه !!! لقد تجاوزت الوقت المحدد لإنجاز عملك و تسببت في مشكلة، إدفع له 50د كتعويض",
+                answers: ["1", "2", "3"], correctAnswer: 2, photoIndex: 11
+            },
+            {
+                question: "! لقد إرتكبت خطأ في عملك لن تلعب في الجولتين المقبلتين            ",
+                answers: ["1", "2", "3"], correctAnswer: 0, photoIndex: 12
+            },*/
+            {
+                question: "إعط مثالا .MUDA ماذا تعرف عن  ",
+                answers: ["Muda = الجودة", "Muda = الضياع", "Muda = المنتوج"], correctAnswer: 1, photoIndex: 13
+            },
+            /*{
+                question: "اووه لقد وقعت في منطقة الأسئلة !خذ بطاقة و أجب عن السؤال.",
+                answers: ["1", "2", "3"], correctAnswer: 1, photoIndex: 14
+            },*/
+            {
+                question: "  3Pماذا تقول قاعدة ",
+                answers: ["لا عيب لا مراقبة لا مشاركة", "لا أقبل العيب، لا أنتج العيب، لا أسمح بمرور العيب", "لا أشارك العيب و لا أراقبه"], correctAnswer: 1, photoIndex: 16
+            },
+            /*{ 
+                question: ".أذكر ثلاث عيوب في مكان عملك", 
+                answers: ["1", "2", "3"], correctAnswer: 2, photoIndex: 16 
+            },
+            {
+                question: "مرحبا بك في تحديات يازاكي !إسحب بطاقة و فز بالتحدي.",
+                answers: ["1", "2", "3"], correctAnswer: 0, photoIndex: 18
+            },*/
+            {
+                question: "ما هو هذا العنصر ؟و ما هي أنواعه ؟",
+                answers: ["Terminal : Femal Arceau", "Terminal : Mal Femal Arceau", "conecteur : Mal Femal Arceau"], correctAnswer: 1, photoIndex: 19
+            },
+            {
+                question: "حدد صاحب الوزرة ؟",
+                answers: ["عامل", "رئيس خط الإنتاج", "مسؤول الجودة "], correctAnswer: 1, photoIndex: 20
+            },
+            {
+                question: "ما هي مناطق الإنتاج ؟",
+                answers: ["التقطيع، ما قبل التجميع، التجميع النهائي.", "التقطيع، مخزن، التجميع النهائي", "الشحن، ما قبل التجميع، التجميع النهائي"], correctAnswer: 0, photoIndex: 21
+            },
+            {
+                question: "من هم زبناء يازاكي مكناس ؟",
+                answers: ["مرسيديس، رونو، بي إم دبليو", "رونو، بي إم دبليو، نيسان", "فورد، نيسان، رونو"], correctAnswer: 1, photoIndex: 22
+            },
+            {
+                question: "ما هو وقت الاستراحة المسموح به ؟",
+                answers: ["30 دقيقة", "40 دقيقة", "  دقيقة 20"], correctAnswer: 2, photoIndex: 23
+            },
+            /*{
+                question: ".توقف ! و خذ استراحة قصيرة",
+                answers: ["1", "2", "3"], correctAnswer: 0, photoIndex: 24
+            },*/
+
+        ];
+
+
+        let shuffledQuestions, currentQuestion, score, totalQuestions, startTime, timerInterval;
+        let playerScores = [];
+
+        function restartQuiz() {
+            // Hide the restart button, result, and scoreboard
+            document.getElementById("restart-button").style.display = "none";
+            document.getElementById("result").style.display = "none";
+            document.getElementById("scoreboard").style.display = "none";  // Hide scoreboard on restart
+
+            // Reset the start container
+            document.getElementById("start-container").style.display = "flex";
+            document.getElementById("duration").style.display = "none";
+            document.getElementById("question-container").style.display = "none";
+            document.querySelectorAll(".answer-button").forEach(button => button.style.display = "none");
+            document.getElementById("score").style.display = "none";
+            document.getElementById("photo-grid").style.display = "none";
+
+            // Reset the matricule input
+            document.getElementById("matricule-input").value = "";
+        }
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < shuffledQuestions.length) {
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+
+            // Masquer le bouton "Suivant" après avoir affiché la question suivante
+            document.getElementById("next-button").style.display = "none";
+
+            // Réactiver les boutons de réponse pour la prochaine question
+            document.querySelectorAll(".answer-button").forEach(button => button.disabled = false);
+        }
+
+        function startQuiz() {
+            const matriculeInput = document.getElementById("matricule-input");
+            if (matriculeInput.value.trim() === "" || matriculeInput.value > 20000) {
+                alert("Veuillez entrer un matricule valide");
+                return;
+            }
+
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            currentQuestion = 0;
+            score = 0;
+            totalQuestions = shuffledQuestions.length;
+
+            document.getElementById("start-container").style.display = "none";
+            document.getElementById("duration").style.display = "block";
+            document.getElementById("question-container").style.display = "flex";
+            document.querySelectorAll(".answer-button").forEach(button => button.style.display = "block");
+            document.getElementById("result").style.display = "none";
+            document.getElementById("score").style.display = "block";
+            document.getElementById("correct-answers").textContent = score;
+            document.getElementById("total-questions").textContent = totalQuestions;
+
+            startTime = new Date().getTime();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            displayQuestion();
+            document.getElementById("photo-grid").style.display = "grid";
+            document.getElementById("scoreboard").style.display = "none";  // Hide scoreboard on start
+        }
+
+        function displayQuestion() {
+            const questionElement = document.getElementById("question");
+            const answersElement = document.querySelectorAll(".answer-button");
+            const questionNumberElement = document.getElementById("question-number");
+
+            questionNumberElement.style.display = "block";
+            questionNumberElement.textContent = ` : السؤال ${currentQuestion + 1}  `;
+
+            questionElement.style.display = "block";
+            questionElement.textContent = shuffledQuestions[currentQuestion].question;
+
+            for (let i = 0; i < 3; i++) {
+                answersElement[i].textContent = shuffledQuestions[currentQuestion].answers[i];
+                answersElement[i].classList.remove("correct", "incorrect");
+            }
+
+            document.getElementById("total-questions").textContent = totalQuestions;
+
+            // Display a red dot on the associated photo
+            const photoIndex = shuffledQuestions[currentQuestion].photoIndex;
+            document.querySelectorAll('.photo-cell .red-dot').forEach(dot => dot.style.display = 'none');
+            document.querySelectorAll('.photo-cell')[photoIndex].querySelector('.red-dot').style.display = 'block';
+
+            // Masquer le bouton "Suivant" au début d'une nouvelle question
+            document.getElementById("next-button").style.display = "none";
+        }
+
+        let userResponses = [];
+
+        function checkAnswer(answerIndex) {
+            const question = shuffledQuestions[currentQuestion];
+            const answerButtons = document.querySelectorAll(".answer-button");
+            if (answerIndex === question.correctAnswer) {
+                answerButtons[answerIndex].classList.add("correct");
+                userResponses[currentQuestion] = {
+                    question: question.question,
+                    answer: question.answers[answerIndex],
+                    correct: true
+                };
+                score++;
+            } else {
+                answerButtons[answerIndex].classList.add("incorrect");
+                userResponses[currentQuestion] = {
+                    question: question.question,
+                    answer: question.answers[answerIndex],
+                    correct: false
+                };
+            }
+
+
+            document.getElementById("correct-answers").textContent = score;
+
+            // Afficher le bouton "Suivant"
+            document.getElementById("next-button").style.display = "block";
+
+            // Désactiver les boutons de réponse pour éviter plusieurs réponses
+            answerButtons.forEach(button => button.disabled = true);
+            
+        }
+
+        function submitTextAnswer() {
+            const question = shuffledQuestions[currentQuestion];
+            const userAnswer = document.getElementById("text-answer").value.trim().toLowerCase();
+            const correctAnswer = question.correctAnswer.trim().toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                alert("Correct!");
+            } else {
+                alert(`Incorrect. The correct answer is: ${correctAnswer}`);
+            }
+
+            document.getElementById("correct-answers").textContent = score;
+
+            // Afficher le bouton "Suivant"
+            document.getElementById("next-button").style.display = "block";
+
+            // Désactiver le champ de réponse pour éviter plusieurs réponses
+            document.getElementById("text-answer").disabled = true;
+            document.getElementById("submit-button").disabled = true;
+        }
+        function displayScoreboard() {
+    const scoreboardElement = document.getElementById("scoreboard");
+    scoreboardElement.innerHTML = "";
+
+    const table = document.createElement("table");
+    table.className = "scoreboard-table";
+
+    const headerRow = table.insertRow(0);
+    const headers = ["Matricule", "Score", "Duration", "Détails"];
+    headers.forEach((header, i) => {
+        const headerCell = headerRow.insertCell(i);
+        headerCell.textContent = header;
+        headerCell.className = "header-cell";
+    });
+
+    playerScores.forEach(score => {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = score.matricule;
+        row.insertCell(1).textContent = score.score;
+        row.insertCell(2).textContent = score.duration;
+
+        const detailsCell = row.insertCell(3);
+        const link = document.createElement("a");
+        const userResponsesJson = JSON.stringify(score.userResponses);
+        link.href = `details.html?matricule=${score.matricule}&userResponses=${userResponsesJson}`;
+        link.textContent = "Resultat";
+        link.target = "_blank";
+        detailsCell.appendChild(link);
+    });
+
+    scoreboardElement.appendChild(table);
+}
+        function endQuiz() {
+            clearInterval(timerInterval);
+
+            const matriculeInput = document.getElementById("matricule-input");
+            const matricule = matriculeInput.value;
+            const durationElement = document.getElementById("duration");
+            const duration = durationElement.textContent;
+
+            playerScores.push({ matricule: matricule, score: score, duration: duration, userResponses: userResponses });
+
+            // Display the scoreboard
+            displayScoreboard();
+            document.getElementById("scoreboard").style.display = "block";  // Show scoreboard on end
+
+            // Display the result
+            document.getElementById("question-container").style.display = "none";
+            document.querySelectorAll(".answer-button").forEach(button => button.style.display = "none");
+            document.getElementById("result").textContent = `تهانينا، ${matricule}! لقد حصلت على درجة ${score} من أصل ${totalQuestions} في توقيت ${duration}.`;
+            document.getElementById("result").style.display = "block";
+            document.getElementById("photo-grid").style.display = "none";
+
+            // Display the restart button
+            document.getElementById("restart-button").style.display = "block";
+        }
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = now - startTime;
+
+            const minutes = Math.floor(distance / 60000);
+            const seconds = Math.floor((distance % 60000) / 1000);
+
+            document.getElementById("duration").textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function validateNumberInput(input) {
+            if (input.value < 0) {
+                input.value = 0;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
